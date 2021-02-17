@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{{>Head}}
+
+<body>
+    <div class="container-fluid">
+        <div class="w-50 m-auto">
+            <h2>&#128372; Ingresar &#128372;</h2>
+
+            <div class="row my-5 border rounded p-5">
+                <div class="col col-4">Email:</div>
+                <div class="col col-8">
+                    <input type="text" class="form-control" id="email" />
+                </div>
+
+                <div class="col col-4">Contraseña:</div>
+                <div class="col col-8">
+                    <input type="password" class="form-control" id="password" />
+                </div>
+
+                <div class="col-12 mt-2">
+                    <button onclick="verificacion()" class="bg-light m-auto btn">
+                        Ingresar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+
+
+            const verificacion = async () => {
+                let email = document.getElementById("email");
+                let password = document.getElementById("password");
+                email = email.value;
+                password = password.value;
+
+                const datos = { email, password };
+                await axios.post("http://localhost:3000/api/login", datos).then((data) => {
+                    console.log('usuario registrado y autorizado', data.data);
+                    getToken(datos);
+                }).catch((e) => {
+                    const mensaje = "Estimado Usuario, usted aun no se encuentra Autorizado para subir imagenes o no existe información de usted en nuestros registros";
+                    alert(mensaje);
+                    console.log(e)
+                })
+            };
+
+            const getToken = async (datos) => {
+console.log('datos en getToken',datos)
+                await axios.post("http://localhost:3000/token", datos).then((resultado) => {
+                    const { data } = resultado;
+                    const { token } = data;
+                    alert("Autenticado con éxito, sera rederigido a Evidencias para que cargue sus fotos")
+                    localStorage.setItem("token", token);
+                    window.location = `/Evidencias?token=${token}`;
+                }).catch((e) => {
+                    console.log(e);
+                })
+            };
+            email.value = "";
+            password.value = "";
+
+        </script>
+</body>
+
+</html>
